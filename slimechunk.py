@@ -15,10 +15,12 @@ else:
     print('Heatmap & Plt not supported')
     
 def javaInt64( val):
-    return ((val + (1 << 63)) % (1 << 64)) - (1 << 63)
+    if (val>>63): return ((val + (1 << 63)) % (1 << 64)) - (1 << 63)
+    else: return val
 #implements java 64bit signed long long
 def javaInt32( val):
-    return ((val + (1 << 31)) % (1 << 32)) - (1 << 31)
+    if (val>>31):return ((val + (1 << 31)) % (1 << 32)) - (1 << 31)
+    else: return val
 #implements java 32bit signed long int
 
 def forcedshift(n, a):
@@ -28,15 +30,11 @@ def forcedshift(n, a):
     
 def nextInt(seed):
     seed = javaInt64(javaInt64(seed ^ (0x5DEECE66D)) & ((1 << 48) - 1))
-    seed, bits = nextVal(seed)
-    val = bits % 10
-    return val
+    seed = javaInt64(seed * (0x5DEECE66D)) & ((1 << 48) - 1)
+    if seed<0 : return ((seed>>17) % 10)-2
+    return (seed>>17)%10
 #java Random.nextInt with some cutting
 
-def nextVal(seed):
-    seed2 = javaInt64(seed * (0x5DEECE66D)) & ((1 << 48) - 1)
-    return seed2, javaInt32(forcedshift(seed2 , 17))
-#java Random.next with some cutting
 
 wseed = 508353848616361759
 #set seed for free
@@ -44,14 +42,13 @@ wseed = 508353848616361759
 def isSlimeChunk(Worldseed, ChunkX, ChunkZ):
     val1 = javaInt32(javaInt32(ChunkX*ChunkX)*0x4c1906)
     val2 = javaInt32(ChunkX * 0x5ac0db)
-    val3 = javaInt64(javaInt64(ChunkZ * ChunkZ) * 0x4307a7)
+    val3 = ChunkZ * ChunkZ * 0x4307a7
     val4 = javaInt32(ChunkZ * 0x5f24f)
-    val5 = javaInt64(javaInt64(javaInt64(val1+val2)+val3)+val4)
-    val6 = javaInt64(val5+Worldseed)
-    ChunkSeed = javaInt64(val6^0x3ad8025f)
+    val5 = javaInt64(val1+val2+val4+val3+Worldseed)
+    ChunkSeed = javaInt64(val5^0x3ad8025f)
     return nextInt(ChunkSeed) == 0
 
-#determines, returns boolean
+#determines, returns boolean, NORMALLY Z<1000000 so val 3 would not overflow
 
 
 def Findcluster(Worldseed, Radius, Squaresize):
