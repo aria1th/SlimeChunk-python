@@ -98,8 +98,9 @@ def SlimeMap(Worldseed, startpos, endpos):
     return hm
 # uses numpy array, so if you don't have then just don't use it
 
-def findsquare(Range, Worldseed, size):
-    Data = Slimechunk().main(Range, Range, Worldseed).get() 
+def findsquareOffset(Offset, Range, Worldseed, size):
+    offx, offz = Offset
+    Data = Slimechunk().main(offx, offz, Range, Range, Worldseed).get()
     a, b = Data.shape
     c = size - 1
     Bool = None
@@ -111,9 +112,23 @@ def findsquare(Range, Worldseed, size):
     zpos, xpos = np.where(Bool)
     if not zpos.shape or not xpos.shape: return [[]]
     else:
-        return [(x,z) for (x,z) in zip(xpos, zpos)]
+        return set((offx +x, offz + z) for (x,z) in zip(xpos, zpos))
     
 
+def findSquare(Range, Worldseed, size):
+    itersize = min(10000, Range)
+    L = set()
+    for i,j in ((i,j) for i in range(-Range, Range, itersize) for j in range(-Range, Range, itersize)):
+        L = L | findsquareOffset((i-2, j-2), itersize+2, Worldseed, size)
+    return L
+        
+def findone(Range, Worldseed, size):
+    itersize = min(30000, Range)
+    L = set()
+    for i,j in ((i,j) for i in range(-Range, Range, itersize) for j in range(-Range, Range, itersize)):
+        L = L | findsquareOffset((i-size, j-size), itersize+size, Worldseed, size)
+        if L: return L
+    return L
 
 def Map(Dataset, Startpos, Endpos):
     a,b = Startpos
