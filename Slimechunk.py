@@ -1653,11 +1653,52 @@ inline int32_t atomic_cmpxchg_i32_local(volatile __local int32_t *p,
 
 
 
-__kernel void mainzisegmap_173(__global int *global_failure, int32_t Xrange_39,
-                               int32_t ZZrange_40, int64_t Worldseed_41,
-                               __global unsigned char *mem_309)
+__kernel void copy_550(int32_t Xrange_157, int32_t ZZrange_158,
+                       int32_t res_ixfn_501, int32_t res_ixfn_502,
+                       int32_t res_ixfn_504, __global
+                       unsigned char *res_mem_506, __global
+                       unsigned char *mem_510)
 {
-    #define segmap_group_sizze_270 (mainzisegmap_group_sizze_178)
+    const int block_dim0 = 0;
+    const int block_dim1 = 1;
+    const int block_dim2 = 2;
+    int32_t copy_gtid_550;
+    int32_t copy_ltid_551;
+    int32_t copy_gid_552;
+    
+    copy_gtid_550 = get_global_id(0);
+    copy_ltid_551 = get_local_id(0);
+    copy_gid_552 = get_group_id(0);
+    if (slt32(copy_gtid_550, ZZrange_158 * Xrange_157)) {
+        ((__global bool *) mem_510)[squot32(copy_gtid_550, Xrange_157) *
+                                    Xrange_157 + (copy_gtid_550 -
+                                                  squot32(copy_gtid_550,
+                                                          Xrange_157) *
+                                                  Xrange_157)] = ((__global
+                                                                   bool *) res_mem_506)[res_ixfn_501 +
+                                                                                        (squot32(copy_gtid_550,
+                                                                                                 Xrange_157) *
+                                                                                         res_ixfn_502 +
+                                                                                         (copy_gtid_550 -
+                                                                                          squot32(copy_gtid_550,
+                                                                                                  Xrange_157) *
+                                                                                          Xrange_157) *
+                                                                                         res_ixfn_504)];
+    }
+    
+  error_0:
+    return;
+}
+__kernel void mainzisegmap_315(__global int *global_failure, int32_t Xrange_157,
+                               int32_t ZZrange_158, int64_t Worldseed_159,
+                               int32_t Xstarts_169, int32_t ZZstarts_173,
+                               int32_t ctx_param_ext_478,
+                               int32_t ctx_param_ext_479,
+                               int32_t ctx_param_ext_481, __global
+                               unsigned char *mem_param_483, __global
+                               unsigned char *mem_488)
+{
+    #define segmap_group_sizze_420 (mainzisegmap_group_sizze_320)
     
     const int block_dim0 = 0;
     const int block_dim1 = 1;
@@ -1666,59 +1707,87 @@ __kernel void mainzisegmap_173(__global int *global_failure, int32_t Xrange_39,
     if (*global_failure >= 0)
         return;
     
-    int32_t global_tid_316;
-    int32_t local_tid_317;
-    int32_t group_sizze_320;
-    int32_t wave_sizze_319;
-    int32_t group_tid_318;
+    int32_t global_tid_545;
+    int32_t local_tid_546;
+    int32_t group_sizze_549;
+    int32_t wave_sizze_548;
+    int32_t group_tid_547;
     
-    global_tid_316 = get_global_id(0);
-    local_tid_317 = get_local_id(0);
-    group_sizze_320 = get_local_size(0);
-    wave_sizze_319 = LOCKSTEP_WIDTH;
-    group_tid_318 = get_group_id(0);
+    global_tid_545 = get_global_id(0);
+    local_tid_546 = get_local_id(0);
+    group_sizze_549 = get_local_size(0);
+    wave_sizze_548 = LOCKSTEP_WIDTH;
+    group_tid_547 = get_group_id(0);
     
-    int32_t phys_tid_173;
+    int32_t phys_tid_315;
     
-    phys_tid_173 = global_tid_316;
+    phys_tid_315 = global_tid_545;
     
-    int32_t gtid_171;
+    int32_t gtid_313;
     
-    gtid_171 = squot32(group_tid_318 * segmap_group_sizze_270 + local_tid_317,
-                       Xrange_39);
+    gtid_313 = squot32(group_tid_547 * segmap_group_sizze_420 + local_tid_546,
+                       Xrange_157);
     
-    int32_t gtid_172;
+    int32_t gtid_314;
     
-    gtid_172 = group_tid_318 * segmap_group_sizze_270 + local_tid_317 -
-        squot32(group_tid_318 * segmap_group_sizze_270 + local_tid_317,
-                Xrange_39) * Xrange_39;
-    if (slt32(gtid_171, ZZrange_40) && slt32(gtid_172, Xrange_39)) {
-        int32_t index_primexp_303 = mul32(389711, gtid_171);
-        int64_t binop_x_297 = sext_i32_i64(gtid_171);
-        int64_t binop_y_300 = mul64(binop_x_297, binop_x_297);
-        int64_t index_primexp_301 = mul64(4392871, binop_y_300);
-        int32_t x_278 = mul32(gtid_172, gtid_172);
-        int32_t vala_279 = mul32(4987142, x_278);
-        int32_t x_280 = mul32(5947611, gtid_172);
-        int32_t valb_281 = add32(x_280, index_primexp_303);
-        int64_t res_282 = sext_i32_i64(vala_279);
-        int64_t res_283 = sext_i32_i64(valb_281);
-        int64_t x_284 = add64(Worldseed_41, res_282);
-        int64_t x_285 = add64(res_283, x_284);
-        int64_t vald_286 = add64(x_285, index_primexp_301);
-        int64_t x_287 = 25303508018 ^ vald_286;
-        int64_t x_288 = mul64(25214903917, x_287);
-        int64_t seed_289 = 281474976710655 & x_288;
-        int64_t x_290 = ashr64(seed_289, 17);
-        int64_t x_291 = smod64(x_290, 10);
-        bool res_292 = x_291 == 0;
+    gtid_314 = group_tid_547 * segmap_group_sizze_420 + local_tid_546 -
+        squot32(group_tid_547 * segmap_group_sizze_420 + local_tid_546,
+                Xrange_157) * Xrange_157;
+    if (slt32(gtid_313, ZZrange_158) && slt32(gtid_314, Xrange_157)) {
+        int32_t binop_y_458 = add32(ZZstarts_173, gtid_313);
+        int32_t index_primexp_459 = mul32(389711, binop_y_458);
+        int64_t binop_x_451 = sext_i32_i64(binop_y_458);
+        int64_t binop_y_455 = mul64(binop_x_451, binop_x_451);
+        int64_t index_primexp_456 = mul64(4392871, binop_y_455);
+        bool x_428 = ((__global bool *) mem_param_483)[ctx_param_ext_478 +
+                                                       (gtid_313 *
+                                                        ctx_param_ext_479 +
+                                                        gtid_314 *
+                                                        ctx_param_ext_481)];
+        int32_t ChunkX_429 = add32(Xstarts_169, gtid_314);
+        int32_t x_430 = mul32(ChunkX_429, ChunkX_429);
+        int32_t vala_431 = mul32(4987142, x_430);
+        int32_t x_432 = mul32(5947611, ChunkX_429);
+        int32_t valb_433 = add32(x_432, index_primexp_459);
+        int64_t res_434 = sext_i32_i64(vala_431);
+        int64_t res_435 = sext_i32_i64(valb_433);
+        int64_t x_436 = add64(Worldseed_159, res_434);
+        int64_t x_437 = add64(res_435, x_436);
+        int64_t vald_438 = add64(x_437, index_primexp_456);
+        int64_t x_439 = 25303508018 ^ vald_438;
+        int64_t x_440 = mul64(25214903917, x_439);
+        int64_t seed_441 = 281474976710655 & x_440;
+        int64_t x_442 = ashr64(seed_441, 17);
+        int64_t x_443 = smod64(x_442, 10);
+        bool res_444 = x_443 == 0;
+        bool x_445 = x_428 && res_444;
         
-        ((__global bool *) mem_309)[gtid_171 * Xrange_39 + gtid_172] = res_292;
+        ((__global bool *) mem_488)[gtid_313 * Xrange_157 + gtid_314] = x_445;
     }
     
   error_0:
     return;
-    #undef segmap_group_sizze_270
+    #undef segmap_group_sizze_420
+}
+__kernel void replicate_522(__global unsigned char *mem_518,
+                            int32_t num_elems_519, unsigned char val_520)
+{
+    const int block_dim0 = 0;
+    const int block_dim1 = 1;
+    const int block_dim2 = 2;
+    int32_t replicate_gtid_522;
+    int32_t replicate_ltid_523;
+    int32_t replicate_gid_524;
+    
+    replicate_gtid_522 = get_global_id(0);
+    replicate_ltid_523 = get_local_id(0);
+    replicate_gid_524 = get_group_id(0);
+    if (slt32(replicate_gtid_522, num_elems_519)) {
+        ((__global bool *) mem_518)[replicate_gtid_522] = val_520;
+    }
+    
+  error_0:
+    return;
 }
 """
 # Start of values.py.
@@ -3023,7 +3092,8 @@ def futhark_fma64(a, b, c):
 
 # End of scalar.py.
 class Slimechunk:
-  entry_points = {"main": (["i32", "i32", "i64"], ["[][]bool"])}
+  entry_points = {"main": (["i32", "i32", "i32", "i32", "i32", "i64"],
+                           ["[][]bool"])}
   def __init__(self, command_queue=None, interactive=False,
                platform_pref=preferred_platform, device_pref=preferred_device,
                default_group_size=default_group_size,
@@ -3065,73 +3135,199 @@ class Slimechunk:
                                        size_heuristics=size_heuristics,
                                        required_types=["i32", "i64", "bool"],
                                        user_sizes=sizes,
-                                       all_sizes={"main.segmap_group_size_178": {"class": "group_size", "value": None}})
-    self.mainzisegmap_173_var = program.mainzisegmap_173
+                                       all_sizes={"group_size_525": {"class": "group_size", "value": None},
+                                        "main.group_size_553": {"class": "group_size", "value": None},
+                                        "main.segmap_group_size_320": {"class": "group_size", "value": None}})
+    self.copy_550_var = program.copy_550
+    self.mainzisegmap_315_var = program.mainzisegmap_315
+    self.replicate_522_var = program.replicate_522
     self.constants = {}
-  def futhark_main(self, Xrange_39, ZZrange_40, Worldseed_41):
-    bounds_invalid_upwards_42 = slt32(ZZrange_40, np.int32(0))
-    valid_43 = not(bounds_invalid_upwards_42)
-    range_valid_c_44 = True
-    assert valid_43, ("Error: %s%d%s%d%s%d%s\n\nBacktrace:\n-> #0  /prelude/math.fut:453:23-30\n   #1  /prelude/array.fut:60:3-12\n   #2  Slimechunk.fut:25:10-20\n   #3  Slimechunk.fut:19:1-25:21\n" % ("Range ",
-                                                                                                                                                                                                          np.int32(0),
-                                                                                                                                                                                                          "..",
-                                                                                                                                                                                                          np.int32(1),
-                                                                                                                                                                                                          "..<",
-                                                                                                                                                                                                          ZZrange_40,
-                                                                                                                                                                                                          " is invalid."))
-    bounds_invalid_upwards_46 = slt32(Xrange_39, np.int32(0))
-    valid_47 = not(bounds_invalid_upwards_46)
-    range_valid_c_48 = True
-    assert valid_47, ("Error: %s%d%s%d%s%d%s\n\nBacktrace:\n-> #0  /prelude/math.fut:453:23-30\n   #1  /prelude/array.fut:60:3-12\n   #2  Slimechunk.fut:24:18-28\n   #3  Slimechunk.fut:20:9-25:21\n   #4  Slimechunk.fut:19:1-25:21\n" % ("Range ",
-                                                                                                                                                                                                                                            np.int32(0),
-                                                                                                                                                                                                                                            "..",
-                                                                                                                                                                                                                                            np.int32(1),
-                                                                                                                                                                                                                                            "..<",
-                                                                                                                                                                                                                                            Xrange_39,
-                                                                                                                                                                                                                                            " is invalid."))
-    ZZrange_266 = sext_i32_i64(ZZrange_40)
-    Xrange_267 = sext_i32_i64(Xrange_39)
-    nest_sizze_269 = (ZZrange_266 * Xrange_267)
-    segmap_group_sizze_270 = self.sizes["main.segmap_group_size_178"]
-    segmap_group_sizze_271 = sext_i32_i64(segmap_group_sizze_270)
-    segmap_usable_groups_64_272 = sdiv_up64(nest_sizze_269,
-                                            segmap_group_sizze_271)
-    segmap_usable_groups_273 = sext_i64_i32(segmap_usable_groups_64_272)
-    mem_309 = opencl_alloc(self, nest_sizze_269, "mem_309")
-    if ((1 * (np.long(segmap_usable_groups_273) * np.long(segmap_group_sizze_270))) != 0):
-      self.mainzisegmap_173_var.set_args(self.global_failure,
-                                         np.int32(Xrange_39),
-                                         np.int32(ZZrange_40),
-                                         np.int64(Worldseed_41), mem_309)
-      cl.enqueue_nd_range_kernel(self.queue, self.mainzisegmap_173_var,
-                                 ((np.long(segmap_usable_groups_273) * np.long(segmap_group_sizze_270)),),
-                                 (np.long(segmap_group_sizze_270),))
+  def futhark_builtinzhreplicate_bool(self, mem_518, num_elems_519, val_520):
+    group_sizze_525 = self.sizes["group_size_525"]
+    num_groups_526 = sdiv_up32(num_elems_519, sext_i32_i32(group_sizze_525))
+    if ((1 * (np.long(num_groups_526) * np.long(group_sizze_525))) != 0):
+      self.replicate_522_var.set_args(mem_518, np.int32(num_elems_519),
+                                      np.byte(val_520))
+      cl.enqueue_nd_range_kernel(self.queue, self.replicate_522_var,
+                                 ((np.long(num_groups_526) * np.long(group_sizze_525)),),
+                                 (np.long(group_sizze_525),))
       if synchronous:
         sync(self)
-    out_arrsizze_314 = ZZrange_40
-    out_arrsizze_315 = Xrange_39
-    out_mem_313 = mem_309
-    return (out_mem_313, out_arrsizze_314, out_arrsizze_315)
-  def main(self, Xrange_39_ext, ZZrange_40_ext, Worldseed_41_ext):
+    return ()
+  def futhark_main(self, squaresizze_154, Xstart_155, ZZstart_156, Xrange_157,
+                   ZZrange_158, Worldseed_159):
+    bounds_invalid_upwards_160 = slt32(ZZrange_158, np.int32(0))
+    valid_161 = not(bounds_invalid_upwards_160)
+    range_valid_c_162 = True
+    assert valid_161, ("Error: %s%d%s%d%s%d%s\n\nBacktrace:\n-> #0  /prelude/math.fut:453:23-30\n   #1  /prelude/array.fut:60:3-12\n   #2  Slimechunk.fut:32:10-20\n   #3  Slimechunk.fut:25:1-45:17\n" % ("Range ",
+                                                                                                                                                                                                           np.int32(0),
+                                                                                                                                                                                                           "..",
+                                                                                                                                                                                                           np.int32(1),
+                                                                                                                                                                                                           "..<",
+                                                                                                                                                                                                           ZZrange_158,
+                                                                                                                                                                                                           " is invalid."))
+    binop_x_463 = sext_i32_i64(ZZrange_158)
+    binop_y_464 = sext_i32_i64(Xrange_157)
+    bytes_462 = (binop_x_463 * binop_y_464)
+    mem_465 = opencl_alloc(self, bytes_462, "mem_465")
+    self.futhark_builtinzhreplicate_bool(mem_465, (ZZrange_158 * Xrange_157),
+                                         True)
+    segmap_group_sizze_420 = self.sizes["main.segmap_group_size_320"]
+    segmap_group_sizze_421 = sext_i32_i64(segmap_group_sizze_420)
+    segmap_usable_groups_64_422 = sdiv_up_safe64(bytes_462,
+                                                 segmap_group_sizze_421)
+    segmap_usable_groups_423 = sext_i64_i32(segmap_usable_groups_64_422)
+    ctx_param_ext_466 = ZZrange_158
+    ctx_param_ext_467 = Xrange_157
+    ctx_param_ext_468 = np.int32(0)
+    ctx_param_ext_469 = Xrange_157
+    ctx_param_ext_470 = ZZrange_158
+    ctx_param_ext_471 = np.int32(1)
+    ctx_param_ext_472 = Xrange_157
+    mem_param_473 = mem_465
+    i_168 = np.int32(0)
+    one_558 = np.int32(1)
+    for counter_557 in range(squaresizze_154):
+      Xstarts_169 = (Xstart_155 + i_168)
+      ctx_param_ext_476 = ctx_param_ext_466
+      ctx_param_ext_477 = ctx_param_ext_467
+      ctx_param_ext_478 = ctx_param_ext_468
+      ctx_param_ext_479 = ctx_param_ext_469
+      ctx_param_ext_480 = ctx_param_ext_470
+      ctx_param_ext_481 = ctx_param_ext_471
+      ctx_param_ext_482 = ctx_param_ext_472
+      mem_param_483 = mem_param_473
+      j_172 = np.int32(0)
+      one_556 = np.int32(1)
+      for counter_555 in range(squaresizze_154):
+        ZZstarts_173 = (ZZstart_156 + j_172)
+        mem_488 = opencl_alloc(self, bytes_462, "mem_488")
+        if ((1 * (np.long(segmap_usable_groups_423) * np.long(segmap_group_sizze_420))) != 0):
+          self.mainzisegmap_315_var.set_args(self.global_failure,
+                                             np.int32(Xrange_157),
+                                             np.int32(ZZrange_158),
+                                             np.int64(Worldseed_159),
+                                             np.int32(Xstarts_169),
+                                             np.int32(ZZstarts_173),
+                                             np.int32(ctx_param_ext_478),
+                                             np.int32(ctx_param_ext_479),
+                                             np.int32(ctx_param_ext_481),
+                                             mem_param_483, mem_488)
+          cl.enqueue_nd_range_kernel(self.queue, self.mainzisegmap_315_var,
+                                     ((np.long(segmap_usable_groups_423) * np.long(segmap_group_sizze_420)),),
+                                     (np.long(segmap_group_sizze_420),))
+          if synchronous:
+            sync(self)
+        ctx_param_ext_tmp_536 = ZZrange_158
+        ctx_param_ext_tmp_537 = Xrange_157
+        ctx_param_ext_tmp_538 = np.int32(0)
+        ctx_param_ext_tmp_539 = Xrange_157
+        ctx_param_ext_tmp_540 = ZZrange_158
+        ctx_param_ext_tmp_541 = np.int32(1)
+        ctx_param_ext_tmp_542 = Xrange_157
+        mem_param_tmp_543 = mem_488
+        ctx_param_ext_476 = ctx_param_ext_tmp_536
+        ctx_param_ext_477 = ctx_param_ext_tmp_537
+        ctx_param_ext_478 = ctx_param_ext_tmp_538
+        ctx_param_ext_479 = ctx_param_ext_tmp_539
+        ctx_param_ext_480 = ctx_param_ext_tmp_540
+        ctx_param_ext_481 = ctx_param_ext_tmp_541
+        ctx_param_ext_482 = ctx_param_ext_tmp_542
+        mem_param_483 = mem_param_tmp_543
+        j_172 += one_556
+      loopres_ixfn_491 = ctx_param_ext_476
+      loopres_ixfn_492 = ctx_param_ext_477
+      loopres_ixfn_493 = ctx_param_ext_478
+      loopres_ixfn_494 = ctx_param_ext_479
+      loopres_ixfn_495 = ctx_param_ext_480
+      loopres_ixfn_496 = ctx_param_ext_481
+      loopres_ixfn_497 = ctx_param_ext_482
+      loopres_mem_498 = mem_param_483
+      ctx_param_ext_tmp_527 = loopres_ixfn_491
+      ctx_param_ext_tmp_528 = loopres_ixfn_492
+      ctx_param_ext_tmp_529 = loopres_ixfn_493
+      ctx_param_ext_tmp_530 = loopres_ixfn_494
+      ctx_param_ext_tmp_531 = loopres_ixfn_495
+      ctx_param_ext_tmp_532 = loopres_ixfn_496
+      ctx_param_ext_tmp_533 = loopres_ixfn_497
+      mem_param_tmp_534 = loopres_mem_498
+      ctx_param_ext_466 = ctx_param_ext_tmp_527
+      ctx_param_ext_467 = ctx_param_ext_tmp_528
+      ctx_param_ext_468 = ctx_param_ext_tmp_529
+      ctx_param_ext_469 = ctx_param_ext_tmp_530
+      ctx_param_ext_470 = ctx_param_ext_tmp_531
+      ctx_param_ext_471 = ctx_param_ext_tmp_532
+      ctx_param_ext_472 = ctx_param_ext_tmp_533
+      mem_param_473 = mem_param_tmp_534
+      i_168 += one_558
+    res_ixfn_499 = ctx_param_ext_466
+    res_ixfn_500 = ctx_param_ext_467
+    res_ixfn_501 = ctx_param_ext_468
+    res_ixfn_502 = ctx_param_ext_469
+    res_ixfn_503 = ctx_param_ext_470
+    res_ixfn_504 = ctx_param_ext_471
+    res_ixfn_505 = ctx_param_ext_472
+    res_mem_506 = mem_param_473
+    mem_465 = None
+    mem_510 = opencl_alloc(self, bytes_462, "mem_510")
+    group_sizze_553 = self.sizes["main.group_size_553"]
+    num_groups_554 = sdiv_up32((ZZrange_158 * Xrange_157),
+                               sext_i32_i32(group_sizze_553))
+    if ((1 * (np.long(num_groups_554) * np.long(group_sizze_553))) != 0):
+      self.copy_550_var.set_args(np.int32(Xrange_157), np.int32(ZZrange_158),
+                                 np.int32(res_ixfn_501), np.int32(res_ixfn_502),
+                                 np.int32(res_ixfn_504), res_mem_506, mem_510)
+      cl.enqueue_nd_range_kernel(self.queue, self.copy_550_var,
+                                 ((np.long(num_groups_554) * np.long(group_sizze_553)),),
+                                 (np.long(group_sizze_553),))
+      if synchronous:
+        sync(self)
+    res_mem_506 = None
+    out_arrsizze_516 = ZZrange_158
+    out_arrsizze_517 = Xrange_157
+    out_mem_515 = mem_510
+    return (out_mem_515, out_arrsizze_516, out_arrsizze_517)
+  def main(self, squaresizze_154_ext, Xstart_155_ext, ZZstart_156_ext,
+           Xrange_157_ext, ZZrange_158_ext, Worldseed_159_ext):
     try:
-      Xrange_39 = np.int32(ct.c_int32(Xrange_39_ext))
+      squaresizze_154 = np.int32(ct.c_int32(squaresizze_154_ext))
     except (TypeError, AssertionError) as e:
       raise TypeError("Argument #0 has invalid value\nFuthark type: {}\nArgument has Python type {} and value: {}\n".format("i32",
-                                                                                                                            type(Xrange_39_ext),
-                                                                                                                            Xrange_39_ext))
+                                                                                                                            type(squaresizze_154_ext),
+                                                                                                                            squaresizze_154_ext))
     try:
-      ZZrange_40 = np.int32(ct.c_int32(ZZrange_40_ext))
+      Xstart_155 = np.int32(ct.c_int32(Xstart_155_ext))
     except (TypeError, AssertionError) as e:
       raise TypeError("Argument #1 has invalid value\nFuthark type: {}\nArgument has Python type {} and value: {}\n".format("i32",
-                                                                                                                            type(ZZrange_40_ext),
-                                                                                                                            ZZrange_40_ext))
+                                                                                                                            type(Xstart_155_ext),
+                                                                                                                            Xstart_155_ext))
     try:
-      Worldseed_41 = np.int64(ct.c_int64(Worldseed_41_ext))
+      ZZstart_156 = np.int32(ct.c_int32(ZZstart_156_ext))
     except (TypeError, AssertionError) as e:
-      raise TypeError("Argument #2 has invalid value\nFuthark type: {}\nArgument has Python type {} and value: {}\n".format("i64",
-                                                                                                                            type(Worldseed_41_ext),
-                                                                                                                            Worldseed_41_ext))
-    (out_mem_313, out_arrsizze_314,
-     out_arrsizze_315) = self.futhark_main(Xrange_39, ZZrange_40, Worldseed_41)
-    return cl.array.Array(self.queue, (out_arrsizze_314, out_arrsizze_315),
-                          ct.c_bool, data=out_mem_313)
+      raise TypeError("Argument #2 has invalid value\nFuthark type: {}\nArgument has Python type {} and value: {}\n".format("i32",
+                                                                                                                            type(ZZstart_156_ext),
+                                                                                                                            ZZstart_156_ext))
+    try:
+      Xrange_157 = np.int32(ct.c_int32(Xrange_157_ext))
+    except (TypeError, AssertionError) as e:
+      raise TypeError("Argument #3 has invalid value\nFuthark type: {}\nArgument has Python type {} and value: {}\n".format("i32",
+                                                                                                                            type(Xrange_157_ext),
+                                                                                                                            Xrange_157_ext))
+    try:
+      ZZrange_158 = np.int32(ct.c_int32(ZZrange_158_ext))
+    except (TypeError, AssertionError) as e:
+      raise TypeError("Argument #4 has invalid value\nFuthark type: {}\nArgument has Python type {} and value: {}\n".format("i32",
+                                                                                                                            type(ZZrange_158_ext),
+                                                                                                                            ZZrange_158_ext))
+    try:
+      Worldseed_159 = np.int64(ct.c_int64(Worldseed_159_ext))
+    except (TypeError, AssertionError) as e:
+      raise TypeError("Argument #5 has invalid value\nFuthark type: {}\nArgument has Python type {} and value: {}\n".format("i64",
+                                                                                                                            type(Worldseed_159_ext),
+                                                                                                                            Worldseed_159_ext))
+    (out_mem_515, out_arrsizze_516,
+     out_arrsizze_517) = self.futhark_main(squaresizze_154, Xstart_155,
+                                           ZZstart_156, Xrange_157, ZZrange_158,
+                                           Worldseed_159)
+    return cl.array.Array(self.queue, (out_arrsizze_516, out_arrsizze_517),
+                          ct.c_bool, data=out_mem_515)

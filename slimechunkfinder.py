@@ -100,36 +100,29 @@ def SlimeMap(Worldseed, startpos, endpos):
 
 def findsquareOffset(Offset, Range, Worldseed, size):
     offx, offz = Offset
-    Data = Slimechunk().main(offx, offz, Range, Range, Worldseed).get()
-    a, b = Data.shape
-    c = size - 1
-    Bool = None
-    for (i,j) in ((i,j) for i in range(size) for j in range(size)):
-        if Bool is None:
-            Bool = Data[i:a+i-c, j:b+j-c]
-            continue
-        Bool = Bool & Data[i:a+i-c, j:b+j-c]
-    zpos, xpos = np.where(Bool)
+    Data = Slimechunk().main(size, offx, offz, Range, Range, Worldseed).get()
+    zpos, xpos = np.where(Data)
     if not zpos.shape or not xpos.shape: return [[]]
     else:
         return set((offx +x, offz + z) for (x,z) in zip(xpos, zpos))
     
-
-def findSquare(Range, Worldseed, size):
-    itersize = min(10000, Range)
-    L = set()
-    for i,j in ((i,j) for i in range(-Range, Range, itersize) for j in range(-Range, Range, itersize)):
-        L = L | findsquareOffset((i-2, j-2), itersize+2, Worldseed, size)
-    return L
         
 def findone(Range, Worldseed, size):
     itersize = min(30000, Range)
     L = set()
-    for i,j in ((i,j) for i in range(-Range, Range, itersize) for j in range(-Range, Range, itersize)):
+    for i,j in ((i,j) for i in sorted(range(-Range, Range, itersize), key = lambda x : abs(x)) for j in sorted(range(-Range, Range, itersize), key = lambda x : abs(x))):
         L = L | findsquareOffset((i-size, j-size), itersize+size, Worldseed, size)
         if L: return L
     return L
 
+def findall(Range, Worldseed, size):
+    st = time.time()
+    itersize = min(30000, Range)
+    L = set()
+    for i,j in ((i,j) for i in sorted(range(-Range, Range, itersize), key = lambda x : abs(x)) for j in sorted(range(-Range, Range, itersize), key = lambda x : abs(x))):
+        L = L | findsquareOffset((i-size, j-size), itersize+size, Worldseed, size)
+    print( len(range(-Range, Range, itersize)) **2 * itersize ** 2 / (time.time() - st))
+    return L
 def Map(Dataset, Startpos, Endpos):
     a,b = Startpos
     c,d = Endpos
